@@ -1,5 +1,7 @@
 # AGV Plate Grid Detection
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) ![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
+
 A classical computer-vision (OpenCV) pipeline that localizes a rectangular plate
 in a single overhead photo and overlays a perspective-correct 8x8 grid on it.
 This is the **localization step** for an AGV (Automated Guided Vehicle): given
