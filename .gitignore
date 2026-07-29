@@ -1,0 +1,7 @@
+__pycache__/
+.ipynb_checkpoints/
+*.zip
+*.pth
+desktop.ini
+.DS_Store
+data/
