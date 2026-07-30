@@ -5,3 +5,7 @@ __pycache__/
 desktop.ini
 .DS_Store
 data/
+
+# Virtual environment
+.venv/
+venv/

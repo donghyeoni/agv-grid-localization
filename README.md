@@ -43,7 +43,9 @@ runs on a single bundled sample image, `sample_images/image_0000.jpg`.
 agv-plate-grid-detection/
 ├── config.py                 # Constants: border thickness, threshold, grid size, default image
 ├── detect.py                 # argparse CLI wiring the full pipeline
+├── run_all.py                # regenerate results/ (figure + JSON) on the sample image
 ├── requirements.txt
+├── RESULTS.md                # rendered result with figure and detected corners
 ├── .gitignore
 ├── README.md
 ├── src/
@@ -52,8 +54,7 @@ agv-plate-grid-detection/
 │   ├── plate_detection.py    # find_largest_contour, order_corners
 │   ├── grid.py               # draw_grid_on_plate
 │   └── visualize.py          # show_stages (1xN matplotlib helper)
-├── notebooks/
-│   └── detection.ipynb       # Original notebook, kept verbatim
+├── results/                  # committed artifacts: detection.png, detection.json
 └── sample_images/
     └── image_0000.jpg        # Tiny demo input (~17 KB)
 ```
@@ -69,7 +70,14 @@ pip install -r requirements.txt
 
 ## Usage
 
-Run on the bundled sample image (default):
+Regenerate the committed results (figure + detected corners) on the bundled
+sample image:
+
+```bash
+python run_all.py        # writes results/detection.png and results/detection.json
+```
+
+Run the interactive CLI on the bundled sample image (default):
 
 ```bash
 python detect.py
@@ -105,6 +113,7 @@ CLI options:
 - **Failure modes.** If no contour is found, or the largest contour does not
   approximate to exactly 4 corners, `detect.py` reports the issue and exits
   without drawing a grid.
-- **Provenance.** The code was refactored from the original Colab notebook
-  (`notebooks/detection.ipynb`). Google Drive mounting and `!pip` boilerplate
-  were removed in favor of local file reading and `requirements.txt`.
+- **Provenance.** The code was refactored from the original Colab notebook.
+  Google Drive mounting and `!pip` boilerplate were removed in favor of local
+  file reading and `requirements.txt`; the runnable pipeline now lives in
+  `detect.py` / `run_all.py` and the committed output in `results/`.
