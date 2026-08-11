@@ -50,7 +50,9 @@ Trained on 412 images (371 train / 17 val / 24 test) for 100 epochs
 
 ## Dataset
 
-Two Roboflow exports (not committed; place them under `data/`):
+Two Roboflow exports (not committed — **contact
+[the author](https://github.com/donghyeoni) to request access**; place them
+under `data/`):
 
 - `kkk8-detection` v2 — 8 doll classes, 383 images
 - `agvdetect` v1 — 1 class (`AGV`), 40 images
@@ -92,7 +94,11 @@ pip install -r requirements.txt
 
 ## Usage
 
-Train and export (requires the datasets under `data/` and a CUDA GPU;
+Trained weights (`best.pt`, `best.onnx`) are available on the
+[Releases page](https://github.com/donghyeoni/agv-plate-grid-detection/releases) —
+download `best.onnx` to run the pipeline without training.
+
+To train from scratch (requires the datasets under `data/` and a CUDA GPU;
 training deps are installed by the YOLOv5 repo cloned on first run):
 
 ```bash
