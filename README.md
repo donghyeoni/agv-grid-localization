@@ -1,4 +1,4 @@
-# AGV Plate Grid Detection
+# Object Localization
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) ![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg) ![YOLOv5](https://img.shields.io/badge/YOLOv5-v7.0-orange.svg)
 
@@ -95,7 +95,7 @@ pip install -r requirements.txt
 ## Usage
 
 Trained weights (`best.pt`, `best.onnx`) are available on the
-[Releases page](https://github.com/donghyeoni/agv-plate-grid-detection/releases) —
+[Releases page](https://github.com/donghyeoni/object-localization/releases) —
 download `best.onnx` to run the pipeline without training.
 
 To train from scratch (requires the datasets under `data/` and a CUDA GPU;
