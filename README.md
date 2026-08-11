@@ -36,11 +36,6 @@ under `data/`):
 - `kkk8-detection` v2 — 8 doll classes, 383 images
 - `agvdetect` v1 — 1 class (`AGV`), 40 images
 
-`scripts/prepare_dataset.py` merges them into one 8-class dataset:
-`DOG` is renamed to `DARK_GRAY`, the unused `RATEL` class is dropped, and
-`AGV` is appended, giving
-`[BLACK, DARK_GRAY, GRAY_BIG, GRAY_SMALL, PINK, SKYBLUE, WHITE, AGV]`.
-
 ## Structure
 
 ```
