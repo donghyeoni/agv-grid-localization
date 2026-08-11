@@ -2,9 +2,14 @@ __pycache__/
 .ipynb_checkpoints/
 *.zip
 *.pth
+*.pt
+*.onnx
 desktop.ini
 .DS_Store
 data/
+results/
+runs/
+third_party/
 
 # Virtual environment
 .venv/
