@@ -27,27 +27,6 @@ plate with a custom-trained **YOLOv5** model (7 doll classes + AGV), and reports
    perspective transform into grid coordinates and assigned a cell
    ([`src/grid_mapping.py`](src/grid_mapping.py)).
 
-## Results
-
-Trained on 412 images (371 train / 17 val / 24 test) for 100 epochs
-(YOLOv5s, 640 px, batch 32 — 2.5 min on an NVIDIA L40S).
-
-![training curves](assets/training_curves.png)
-
-**Test set** (24 images, 144 instances):
-
-| Class | P | R | mAP@0.5 | mAP@0.5:0.95 |
-| --- | --- | --- | --- | --- |
-| **all** | **0.989** | **0.989** | **0.995** | **0.654** |
-| BLACK | 0.986 | 1.000 | 0.995 | 0.649 |
-| DARK_GRAY | 0.985 | 0.950 | 0.993 | 0.644 |
-| GRAY_BIG | 0.978 | 1.000 | 0.995 | 0.674 |
-| GRAY_SMALL | 0.986 | 1.000 | 0.995 | 0.728 |
-| PINK | 0.990 | 1.000 | 0.995 | 0.700 |
-| SKYBLUE | 0.997 | 1.000 | 0.995 | 0.571 |
-| WHITE | 1.000 | 0.961 | 0.995 | 0.493 |
-| AGV | 0.993 | 1.000 | 0.995 | 0.771 |
-
 ## Dataset
 
 Two Roboflow exports (not committed — **contact
