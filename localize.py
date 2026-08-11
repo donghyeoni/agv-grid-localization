@@ -15,7 +15,6 @@ import sys
 
 import cv2
 
-import config
 from src.preprocessing import load_image, mask_borders, to_threshold
 from src.plate_detection import find_largest_contour, order_corners
 from src.grid import draw_grid_on_plate
@@ -33,9 +32,12 @@ def parse_args():
         required=True,
         help="Path to the input image.",
     )
-    parser.add_argument("--border-thickness", type=int, default=config.BORDER_THICKNESS)
-    parser.add_argument("--threshold", type=int, default=config.GRAY_THRESHOLD)
-    parser.add_argument("--grid-size", type=int, default=config.GRID_SIZE)
+    parser.add_argument("--border-thickness", type=int, default=30,
+                        help="Border margin (px) masked on each edge.")
+    parser.add_argument("--threshold", type=int, default=170,
+                        help="Grayscale threshold for plate isolation.")
+    parser.add_argument("--grid-size", type=int, default=8,
+                        help="Grid cells per side (N x N).")
     parser.add_argument("--conf", type=float, default=0.25, help="Confidence threshold.")
     parser.add_argument("--save", default=None, help="Save the annotated image here.")
     parser.add_argument("--json", default=None, help="Save detections as JSON here.")

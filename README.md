@@ -38,9 +38,7 @@ under `data/`):
 ## Structure
 
 ```
-├── localize.py               # full pipeline demo: grid + detection + cell mapping
-├── detect.py                 # stage-1-only demo (plate grid overlay)
-├── config.py                 # border thickness, threshold, grid size defaults
+├── localize.py               # pipeline entry point: grid + detection + cell mapping
 ├── src/
 │   ├── preprocessing.py      # load, border mask, threshold
 │   ├── plate_detection.py    # largest contour, corner ordering
@@ -90,12 +88,6 @@ GRAY_BIG      0.90  (5,2) #42
 PINK          0.86  (2,1) #17
 DARK_GRAY     0.86  (7,5) #61
 ...
-```
-
-Grid-only demo (no model needed):
-
-```bash
-python detect.py --image photo.jpg
 ```
 
 ## Jetson Nano deployment

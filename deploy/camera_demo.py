@@ -17,11 +17,14 @@ import cv2
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import config
 from src.preprocessing import mask_borders, to_threshold
 from src.plate_detection import find_largest_contour, order_corners
 from src.grid_mapping import boxes_to_cells
 from src.yolo_onnx import YoloOnnx, CLASS_NAMES
+
+BORDER_THICKNESS = 30
+GRAY_THRESHOLD = 170
+GRID_SIZE = 8
 
 CSI_PIPELINE = (
     "nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, "
@@ -36,7 +39,7 @@ def main():
     parser.add_argument("--csi", action="store_true", help="Use the CSI camera pipeline.")
     parser.add_argument("--camera", type=int, default=0, help="USB camera index.")
     parser.add_argument("--conf", type=float, default=0.25)
-    parser.add_argument("--grid-size", type=int, default=config.GRID_SIZE)
+    parser.add_argument("--grid-size", type=int, default=GRID_SIZE)
     args = parser.parse_args()
 
     model = YoloOnnx(args.model, conf_threshold=args.conf)
@@ -53,8 +56,8 @@ def main():
             start = time.time()
             img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            masked = mask_borders(img_rgb, config.BORDER_THICKNESS)
-            contour = find_largest_contour(to_threshold(masked, config.GRAY_THRESHOLD))
+            masked = mask_borders(img_rgb, BORDER_THICKNESS)
+            contour = find_largest_contour(to_threshold(masked, GRAY_THRESHOLD))
             corners = order_corners(contour) if contour is not None else None
 
             detections = model.detect(img_rgb)
