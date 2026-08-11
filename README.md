@@ -11,9 +11,6 @@ plate with a custom-trained **YOLOv5** model (7 doll classes + AGV), and reports
 
 ![pipeline demo](assets/pipeline_demo.jpg)
 
-*Each detection is labeled with its class and grid-cell index (row-major,
-0 = top-left, 63 = bottom-right): `PINK #17`, `BLACK #52`, `DARK_GRAY #61`, ...*
-
 ## Pipeline
 
 1. **Plate grid (classical CV)** — mask image borders, threshold the grayscale
