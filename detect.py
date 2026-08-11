@@ -4,9 +4,8 @@ Pipeline: load -> mask borders -> threshold -> largest contour -> order corners
 -> draw grid -> visualize.
 
 Usage:
-    python detect.py --image sample_images/image_0000.jpg
-    python detect.py                      # uses the default demo image
-    python detect.py --save out.png --no-show
+    python detect.py --image photo.jpg
+    python detect.py --image photo.jpg --save out.png --no-show
 """
 
 import argparse
@@ -27,8 +26,8 @@ def parse_args():
     )
     parser.add_argument(
         "--image",
-        default=config.DEFAULT_IMAGE_PATH,
-        help="Path to the input image (default: bundled sample image).",
+        required=True,
+        help="Path to the input image.",
     )
     parser.add_argument(
         "--border-thickness",

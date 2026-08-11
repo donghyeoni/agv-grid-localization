@@ -40,7 +40,6 @@ under `data/`):
 ```
 ├── localize.py               # full pipeline demo: grid + detection + cell mapping
 ├── detect.py                 # stage-1-only demo (plate grid overlay)
-├── run_all.py                # regenerate results/ from the bundled sample image
 ├── config.py                 # border thickness, threshold, grid size defaults
 ├── src/
 │   ├── preprocessing.py      # load, border mask, threshold
@@ -53,8 +52,7 @@ under `data/`):
 │   ├── train.py              # YOLOv5 v7.0 training wrapper
 │   └── export_onnx.py        # best.pt -> ONNX (opset 12, simplified)
 ├── deploy/                   # Jetson Nano setup notes + live camera demo
-├── assets/                   # figures used by this README
-└── sample_images/            # bundled demo input
+└── assets/                   # figures used by this README
 ```
 
 ## Setup
@@ -97,10 +95,8 @@ DARK_GRAY     0.86  (7,5) #61
 Grid-only demo (no model needed):
 
 ```bash
-python detect.py --image sample_images/image_0000.jpg
+python detect.py --image photo.jpg
 ```
-
-![grid stages](assets/grid_stages.png)
 
 ## Jetson Nano deployment
 
@@ -111,9 +107,9 @@ JetPack setup and the live camera demo (`deploy/camera_demo.py`).
 ## Notes
 
 - **Plate detection is threshold-based.** The defaults (`--threshold 170`,
-  `--border-thickness 30`) were tuned for the sample scene; different lighting
-  needs retuning. If no 4-corner plate contour is found, detections are still
-  reported but without cell indices.
+  `--border-thickness 30`) were tuned for the original capture setup; different
+  lighting needs retuning. If no 4-corner plate contour is found, detections
+  are still reported but without cell indices.
 - **AGV class has few samples** (40 boxes), so its box-precision
   (mAP@0.5:0.95) is less reliable than the doll classes despite the high
   mAP@0.5.

@@ -6,7 +6,6 @@ the grid cell it occupies. Prints a table of (class, confidence, cell) and can
 save an annotated figure plus a machine-readable JSON.
 
 Usage:
-    python localize.py --model runs/agv-grid-8cls/weights/best.onnx
     python localize.py --model best.onnx --image path/to/photo.jpg --save out.png
 """
 
@@ -31,8 +30,8 @@ def parse_args():
     parser.add_argument("--model", required=True, help="Path to the YOLOv5 ONNX model.")
     parser.add_argument(
         "--image",
-        default=config.DEFAULT_IMAGE_PATH,
-        help="Path to the input image (default: bundled sample image).",
+        required=True,
+        help="Path to the input image.",
     )
     parser.add_argument("--border-thickness", type=int, default=config.BORDER_THICKNESS)
     parser.add_argument("--threshold", type=int, default=config.GRAY_THRESHOLD)
