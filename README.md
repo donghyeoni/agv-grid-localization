@@ -29,7 +29,7 @@ plate with a custom-trained **YOLOv5** model (7 doll classes + AGV), and reports
 
 ## Dataset
 
-(not committed — **contact[the author](https://github.com/donghyeoni) to request access**; place them
+(not committed — **contact [the author](https://github.com/donghyeoni) to request access**; place them
 under `data/`):
 
 - `kkk8-detection` v2 — 8 doll classes, 383 images
