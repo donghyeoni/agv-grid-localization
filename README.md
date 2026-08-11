@@ -117,3 +117,8 @@ CLI options:
   Google Drive mounting and `!pip` boilerplate were removed in favor of local
   file reading and `requirements.txt`; the runnable pipeline now lives in
   `detect.py` / `run_all.py` and the committed output in `results/`.
+
+## Contributors
+
+- [donghyeoni](https://github.com/donghyeoni)
+- [Kyung Sejin (kkkksj)](https://github.com/kkkksj)
