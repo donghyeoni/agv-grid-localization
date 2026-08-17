@@ -61,7 +61,7 @@ pip install -r requirements.txt
 ## Usage
 
 Trained weights (`best.pt`, `best.onnx`) are available on the
-[Releases page](https://github.com/donghyeoni/object-localization/releases) —
+[Releases page](https://github.com/donghyeoni/agv-grid-localization/releases) —
 download `best.onnx` to run the pipeline without training.
 
 To train from scratch (requires the datasets under `data/` and a CUDA GPU;
