@@ -34,8 +34,8 @@ def order_corners(contour):
 
         - top-left     has the smallest (x + y)
         - bottom-right has the largest  (x + y)
-        - top-right    has the smallest (x - y) via ``np.diff``
-        - bottom-left  has the largest  (x - y) via ``np.diff``
+        - top-right    has the smallest (y - x) via ``np.diff``
+        - bottom-left  has the largest  (y - x) via ``np.diff``
 
     Args:
         contour: An OpenCV contour.
