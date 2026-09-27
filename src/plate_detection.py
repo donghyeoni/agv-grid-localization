@@ -3,6 +3,8 @@
 import cv2
 import numpy as np
 
+from .preprocessing import mask_borders, to_threshold
+
 
 def find_largest_contour(threshold_img):
     """Find the largest external contour in a thresholded image.
@@ -14,7 +16,7 @@ def find_largest_contour(threshold_img):
         The largest contour by area, or ``None`` if no contour is found.
     """
     contours, _ = cv2.findContours(
-        threshold_img.astype(np.uint8),
+        threshold_img.astype(np.uint8, copy=False),
         cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE,
     )
@@ -58,3 +60,11 @@ def order_corners(contour):
     rect[3] = pts[np.argmax(diff)]  # bottom-left
 
     return rect
+
+
+def find_plate(img, border_thickness, threshold, bgr=False):
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY if bgr else cv2.COLOR_RGB2GRAY)
+    contour = find_largest_contour(to_threshold(mask_borders(gray, border_thickness), threshold))
+    if contour is None:
+        return None
+    return order_corners(contour)

@@ -14,7 +14,7 @@ CLASS_NAMES = [
 ]
 
 
-def letterbox(img, new_size=640, color=114):
+def letterbox(img, new_size=640, color=114, bgr=False):
     """Resize with unchanged aspect ratio and pad to a square.
 
     Returns:
@@ -25,9 +25,13 @@ def letterbox(img, new_size=640, color=114):
     scale = new_size / max(h, w)
     nh, nw = round(h * scale), round(w * scale)
     resized = cv2.resize(img, (nw, nh))
+    if bgr:
+        resized = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
     pad_x, pad_y = (new_size - nw) // 2, (new_size - nh) // 2
-    padded = np.full((new_size, new_size, 3), color, dtype=np.uint8)
-    padded[pad_y:pad_y + nh, pad_x:pad_x + nw] = resized
+    padded = cv2.copyMakeBorder(
+        resized, pad_y, new_size - nh - pad_y, pad_x, new_size - nw - pad_x,
+        cv2.BORDER_CONSTANT, value=(color, color, color),
+    )
     return padded, scale, (pad_x, pad_y)
 
 
@@ -62,18 +66,22 @@ class YoloOnnx:
         self.conf_threshold = conf_threshold
         self.iou_threshold = iou_threshold
 
-    def detect(self, img_rgb):
-        """Detect objects in an RGB image.
+    def detect(self, img, bgr=False):
+        """Detect objects in an RGB image (or a BGR one with ``bgr=True``).
 
         Returns:
             A list of ``(x1, y1, x2, y2, confidence, class_id)`` tuples in
             original image pixel coordinates.
         """
-        padded, scale, (pad_x, pad_y) = letterbox(img_rgb, self.input_size)
-        blob = padded.astype(np.float32).transpose(2, 0, 1)[None] / 255.0
+        padded, scale, (pad_x, pad_y) = letterbox(img, self.input_size, bgr=bgr)
+        blob = np.ascontiguousarray(padded.transpose(2, 0, 1)[None], dtype=np.float32)
+        blob /= 255.0
         pred = self.session.run(None, {self.input_name: blob})[0][0]
 
         # pred rows: cx, cy, w, h, objectness, per-class scores
+        pred = pred[pred[:, 4] >= self.conf_threshold]
+        if not len(pred):
+            return []
         scores = pred[:, 4:5] * pred[:, 5:]
         class_ids = scores.argmax(axis=1)
         confidences = scores[np.arange(len(scores)), class_ids]
@@ -81,23 +89,22 @@ class YoloOnnx:
         if not mask.any():
             return []
 
-        cxcywh = pred[mask, :4]
-        confidences, class_ids = confidences[mask], class_ids[mask]
-        boxes = np.empty_like(cxcywh)
-        boxes[:, 0] = cxcywh[:, 0] - cxcywh[:, 2] / 2
-        boxes[:, 1] = cxcywh[:, 1] - cxcywh[:, 3] / 2
-        boxes[:, 2] = cxcywh[:, 0] + cxcywh[:, 2] / 2
-        boxes[:, 3] = cxcywh[:, 1] + cxcywh[:, 3] / 2
+        pred, confidences, class_ids = pred[mask], confidences[mask], class_ids[mask]
+        center, half = pred[:, :2], pred[:, 2:4] / 2
+        boxes = np.concatenate([center - half, center + half], axis=1)
 
-        keep = nms(boxes, confidences, self.iou_threshold)
-        detections = []
-        for i in keep:
-            x1 = (boxes[i, 0] - pad_x) / scale
-            y1 = (boxes[i, 1] - pad_y) / scale
-            x2 = (boxes[i, 2] - pad_x) / scale
-            y2 = (boxes[i, 3] - pad_y) / scale
-            detections.append(
-                (float(x1), float(y1), float(x2), float(y2),
-                 float(confidences[i]), int(class_ids[i]))
+        keep = np.concatenate([
+            idx[nms(boxes[idx], confidences[idx], self.iou_threshold)]
+            for idx in (np.flatnonzero(class_ids == c) for c in np.unique(class_ids))
+        ])
+        keep = keep[np.argsort(-confidences[keep], kind="stable")]
+        boxes = boxes[keep].astype(np.float64)
+        boxes[:, 0::2] -= pad_x
+        boxes[:, 1::2] -= pad_y
+        boxes /= scale
+        return [
+            (x1, y1, x2, y2, conf, cls_id)
+            for (x1, y1, x2, y2), conf, cls_id in zip(
+                boxes.tolist(), confidences[keep].tolist(), class_ids[keep].tolist()
             )
-        return detections
+        ]

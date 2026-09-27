@@ -17,8 +17,7 @@ import cv2
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from src.preprocessing import mask_borders, to_threshold
-from src.plate_detection import find_largest_contour, order_corners
+from src.plate_detection import find_plate
 from src.grid_mapping import boxes_to_cells
 from src.yolo_onnx import YoloOnnx, CLASS_NAMES
 
@@ -53,20 +52,15 @@ def main():
             ok, frame = cap.read()
             if not ok:
                 break
-            start = time.time()
-            img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-            masked = mask_borders(img_rgb, BORDER_THICKNESS)
-            contour = find_largest_contour(to_threshold(masked, GRAY_THRESHOLD))
-            corners = order_corners(contour) if contour is not None else None
-
-            detections = model.detect(img_rgb)
+            start = time.perf_counter()
+            corners = find_plate(frame, BORDER_THICKNESS, GRAY_THRESHOLD, bgr=True)
+            detections = model.detect(frame, bgr=True)
             if corners is not None:
                 cells = boxes_to_cells([d[:4] for d in detections], corners, args.grid_size)
             else:
                 cells = [None] * len(detections)
 
-            elapsed = (time.time() - start) * 1000
+            elapsed = (time.perf_counter() - start) * 1000
             summary = ", ".join(
                 f"{CLASS_NAMES[d[5]]}@{c[2] if c else '?'}"
                 for d, c in zip(detections, cells)

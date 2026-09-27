@@ -5,7 +5,6 @@ Google Drive) with plain local file reading via ``cv2.imread``.
 """
 
 import cv2
-import numpy as np
 
 
 def load_image(path):
@@ -30,32 +29,32 @@ def mask_borders(img, thickness):
     """Blacken a border of the given thickness on all four edges.
 
     Args:
-        img: RGB image as a ``numpy.ndarray``.
+        img: Image as a ``numpy.ndarray`` (grayscale or color).
         thickness: Border thickness in pixels to set to zero on each edge.
 
     Returns:
         A copy of ``img`` with the borders masked to black.
     """
     processed = img.copy()
-    processed[:thickness, :, :] = 0
-    processed[-thickness:, :, :] = 0
-    processed[:, :thickness, :] = 0
-    processed[:, -thickness:, :] = 0
+    h, w = processed.shape[:2]
+    processed[:thickness] = 0
+    processed[max(h - thickness, 0):] = 0
+    processed[:, :thickness] = 0
+    processed[:, max(w - thickness, 0):] = 0
     return processed
 
 
-def to_threshold(img, thresh):
-    """Convert to grayscale and zero out pixels at or below ``thresh``.
+def to_threshold(gray, thresh):
+    """Zero out grayscale pixels at or below ``thresh``.
 
     Pixels with a grayscale value greater than ``thresh`` keep their original
     value; all others are set to 0. This isolates the bright rectangular plate.
 
     Args:
-        img: RGB image as a ``numpy.ndarray``.
+        gray: Grayscale ``uint8`` image as a ``numpy.ndarray``.
         thresh: Grayscale threshold value.
 
     Returns:
         The thresholded grayscale image as a ``numpy.ndarray``.
     """
-    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-    return np.where(gray <= thresh, 0, gray)
+    return cv2.threshold(gray, thresh, 255, cv2.THRESH_TOZERO)[1]

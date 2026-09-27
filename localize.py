@@ -15,8 +15,8 @@ import sys
 
 import cv2
 
-from src.preprocessing import load_image, mask_borders, to_threshold
-from src.plate_detection import find_largest_contour, order_corners
+from src.preprocessing import load_image
+from src.plate_detection import find_plate
 from src.grid import draw_grid_on_plate
 from src.grid_mapping import boxes_to_cells
 from src.yolo_onnx import YoloOnnx, CLASS_NAMES
@@ -50,26 +50,22 @@ def main():
 
     # Stage 1: plate grid (classical CV).
     img_rgb = load_image(args.image)
-    img_masked = mask_borders(img_rgb, args.border_thickness)
-    threshold_img = to_threshold(img_masked, args.threshold)
-    contour = find_largest_contour(threshold_img)
-    if contour is None:
-        print("No plate contour found.", file=sys.stderr)
-        return 1
-    corners = order_corners(contour)
+    corners = find_plate(img_rgb, args.border_thickness, args.threshold)
     if corners is None:
-        print("Plate contour does not approximate to 4 corners.", file=sys.stderr)
-        return 1
+        print("No 4-corner plate found; reporting detections without cells.", file=sys.stderr)
 
     # Stage 2: object detection (YOLOv5 ONNX).
     model = YoloOnnx(args.model, conf_threshold=args.conf)
     detections = model.detect(img_rgb)
 
     # Stage 3: map each detection to its grid cell.
-    boxes = [d[:4] for d in detections]
-    cells = boxes_to_cells(boxes, corners, args.grid_size)
+    if corners is None:
+        cells = [None] * len(detections)
+        annotated = img_rgb.copy()
+    else:
+        cells = boxes_to_cells([d[:4] for d in detections], corners, args.grid_size)
+        annotated = draw_grid_on_plate(img_rgb, corners, args.grid_size)
 
-    annotated = draw_grid_on_plate(img_rgb, corners, args.grid_size)
     records = []
     print(f"{'class':<12} {'conf':>5}  cell")
     for (x1, y1, x2, y2, conf, cls_id), cell in zip(detections, cells):

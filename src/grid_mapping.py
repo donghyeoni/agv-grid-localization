@@ -30,26 +30,6 @@ def grid_transform(ordered_corners, grid_size):
     return cv2.getPerspectiveTransform(src, dst)
 
 
-def point_to_cell(point, matrix, grid_size):
-    """Project an image point into the grid and return its cell.
-
-    Args:
-        point: ``(x, y)`` pixel coordinates.
-        matrix: Transform from :func:`grid_transform`.
-        grid_size: Number of cells per side.
-
-    Returns:
-        ``(row, col, index)`` with ``index = row * grid_size + col``, or
-        ``None`` if the point falls outside the plate.
-    """
-    src = np.array([[point]], dtype="float32")
-    gx, gy = cv2.perspectiveTransform(src, matrix)[0, 0]
-    if not (0 <= gx < grid_size and 0 <= gy < grid_size):
-        return None
-    row, col = int(gy), int(gx)
-    return row, col, row * grid_size + col
-
-
 def boxes_to_cells(boxes, ordered_corners, grid_size):
     """Assign each detection box to a grid cell by its center point.
 
@@ -60,11 +40,17 @@ def boxes_to_cells(boxes, ordered_corners, grid_size):
 
     Returns:
         A list the same length as ``boxes``: each element is
-        ``(row, col, index)`` or ``None`` for boxes centered off the plate.
+        ``(row, col, index)`` with ``index = row * grid_size + col``, or
+        ``None`` for boxes centered off the plate.
     """
-    matrix = grid_transform(ordered_corners, grid_size)
-    cells = []
-    for x1, y1, x2, y2 in boxes:
-        center = ((x1 + x2) / 2.0, (y1 + y2) / 2.0)
-        cells.append(point_to_cell(center, matrix, grid_size))
-    return cells
+    boxes = np.asarray(boxes, dtype=np.float64).reshape(-1, 4)
+    if not len(boxes):
+        return []
+    centers = ((boxes[:, :2] + boxes[:, 2:]) / 2.0).astype(np.float32)
+    grid = cv2.perspectiveTransform(centers[:, None], grid_transform(ordered_corners, grid_size))[:, 0]
+    inside = ((grid >= 0) & (grid < grid_size)).all(axis=1)
+    cols, rows = np.where(inside[:, None], grid, 0).astype(int).T
+    return [
+        (row, col, row * grid_size + col) if ok else None
+        for row, col, ok in zip(rows.tolist(), cols.tolist(), inside.tolist())
+    ]
