@@ -1,4 +1,4 @@
-# AGV Grid Localization
+# AGV 작업판 물체 격자 위치 인식
 
 AGV 작업판을 위에서 찍은 영상 한 장에서 판 위 물체(인형 7종, AGV)를 검출하고, 각 물체가 8×8 격자의 어느 칸에
 있는지 알려주는 서비스다. Jetson Nano에서 onnxruntime으로 돈다. 데이터셋, 학습 결과, 최적화, 배포 설정은
